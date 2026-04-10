@@ -1,19 +1,24 @@
 import Footer from "@/components/MainComponents/Footer/Footer";
 import Navbar from "@/components/MainComponents/Navbar/Navbar";
-import React, { ReactNode } from "react";
+import React from "react";
 
 interface LayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+export default function RootLayout({ children }: LayoutProps) {
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="">{children}</div>
-      <Footer></Footer>
-    </div>
-  );
-};
+    <html lang="en">
+      <body className="min-h-screen flex flex-col">
+        {/* Navbar */}
+        <Navbar />
 
-export default Layout;
+        {/* Main Content */}
+        <main className="flex-1">{children}</main>
+
+        {/* Footer */}
+        <Footer />
+      </body>
+    </html>
+  );
+}
