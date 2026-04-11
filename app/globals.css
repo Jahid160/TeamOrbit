@@ -22,15 +22,14 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #ededed;
-  }
-}
+ 
+  
 /* Base styles using the new theme variables */
 :root {
   --background: var(--color-surface);
   --foreground: var(--color-on-surface);
+}
+
 }
 
 body {
