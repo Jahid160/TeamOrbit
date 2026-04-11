@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   LuUser,
   LuMail,
@@ -12,11 +14,14 @@ import {
   LuArrowRight,
   LuBox,
   LuCircleCheck,
+  LuLoader,
 } from "react-icons/lu";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 
 const RegisterPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,8 +30,54 @@ const RegisterPage = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to create user in your Neon database via an API route
-    console.log("Registering user:", formData);
+    setLoading(true);
+
+    // ১. ভ্যালিডেশন চেক (অপশনাল কিন্তু ভালো)
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
+
+    const toastId = toast.loading("Creating your account...");
+
+    try {
+      // ২. রেজিস্ট্রেশন API কল
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      toast.success("Account created successfully!", { id: toastId });
+
+      // ৩. অটোমেটিক লগইন
+      const loginResult = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (loginResult?.error) {
+        toast.error("Account created, but auto-login failed. Please sign in.");
+        router.push("/login");
+      } else {
+        toast.success("Redirecting to dashboard...");
+        router.push("/dashboard");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred", {
+        id: toastId,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,6 +204,7 @@ const RegisterPage = () => {
                   type="text"
                   placeholder="John Doe"
                   required
+                  disabled={loading}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
@@ -176,6 +228,7 @@ const RegisterPage = () => {
                   type="email"
                   placeholder="name@company.com"
                   required
+                  disabled={loading}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
@@ -199,6 +252,7 @@ const RegisterPage = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Min. 8 characters"
                   required
+                  disabled={loading}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
@@ -226,11 +280,18 @@ const RegisterPage = () => {
             </p>
 
             <button
-              className="w-full bg-primary text-white py-3.5 px-6 rounded-full font-bold text-base shadow-xl shadow-primary/20 hover:bg-primary-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2"
+              className="w-full bg-primary text-white py-3.5 px-6 rounded-full font-bold text-base shadow-xl shadow-primary/20 hover:bg-primary-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
               type="submit"
+              disabled={loading}
             >
-              <span>Create Workspace</span>
-              <LuArrowRight size={20} />
+              {loading ? (
+                <LuLoader className="animate-spin" size={20} />
+              ) : (
+                <>
+                  <span>Create Workspace</span>
+                  <LuArrowRight size={20} />
+                </>
+              )}
             </button>
           </form>
 
