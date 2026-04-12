@@ -17,6 +17,7 @@ model User {
   email         String    @unique
   password      String?   // Optional: Only needed for Credentials provider
   image         String?
+  role          String    @default("user")
   emailVerified DateTime?
   accounts      Account[]
   sessions      Session[]
