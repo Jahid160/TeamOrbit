@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   LuUser,
@@ -27,7 +27,8 @@ const RegisterPage = () => {
     email: "",
     password: "",
   });
-
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -158,7 +159,7 @@ const RegisterPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
             <button
               type="button"
-              onClick={() => signIn("google")}
+              onClick={() => signIn("google", { callbackUrl })}
               className="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container hover:bg-outline-variant/20 transition-all rounded-xl border border-outline-variant/30"
             >
               <FaGoogle className="text-on-surface-variant" />
@@ -168,7 +169,7 @@ const RegisterPage = () => {
             </button>
             <button
               type="button"
-              onClick={() => signIn("github")}
+              onClick={() => signIn("github", { callbackUrl })}
               className="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container hover:bg-outline-variant/20 transition-all rounded-xl border border-outline-variant/30"
             >
               <FaGithub className="text-on-surface-variant" />
