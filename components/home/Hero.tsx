@@ -49,7 +49,7 @@ const Hero = () => {
 
   return (
     
-    <section className="bg-gray-100 max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl mt-10">
+    <section className="bg-gray-200 max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl mt-10">
       
       {/*  */}
       <div className="relative w-full h-[85vh] md:h-[90vh] overflow-hidden bg-gray-950">
