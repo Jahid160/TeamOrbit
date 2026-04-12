@@ -35,13 +35,12 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const adminNav = [
-    { name: "Users", href: "/dashboard/users", icon: Users },
     {
       name: "User Management",
       href: "/dashboard/user-management",
       icon: User,
     },
-    { name: "TeamLM", href: "/dashboard/teamLeaders", icon: ShieldUser },
+    { name: "Team Leaders", href: "/dashboard/teamLeaders", icon: ShieldUser },
     { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
     { name: "Tasks", href: "/dashboard/tasks", icon: ShieldCheck },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
@@ -54,9 +53,9 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   ];
 
   const userNav = [
-    { name: "Adoptions", href: "/dashboard/adoption-requests", icon: PawPrint },
-    { name: "Favorites", href: "/dashboard/favorites", icon: HeartPlus },
-    { name: "Shop", href: "/dashboard/accessories", icon: ShoppingBagIcon },
+    { name: "My Tasks", href: "/dashboard/my-tasks", icon: ShieldCheck },
+    { name: "my process", href: "/dashboard/my-process", icon: BarChart3 },
+    { name: "Profile", href: "/dashboard/profile", icon: User },
   ];
 
   const navItems =
