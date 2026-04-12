@@ -20,6 +20,8 @@ const DashboardHome = () => {
     return <AdminDashboard />;
   } else if (userRole === "user") {
     return <UserDashboard />;
+  } else if (userRole === "teamLeader") {
+    return <div>Team Leader Dashboard (Coming Soon)</div>;
   } else {
     return <div>Unauthorized</div>;
   }
