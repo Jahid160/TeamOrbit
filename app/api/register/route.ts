@@ -32,6 +32,7 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        role: "user", // Default role, you can adjust this as needed
       },
     });
 
