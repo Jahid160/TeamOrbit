@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Bell, Sparkles, User } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { Search, Bell, Sparkles, User, LogOut } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 const DashboardNavbar = () => {
   const { data: session } = useSession();
   const [showNotif, setShowNotif] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   return (
     <header className="bg-white/80 backdrop-blur-xl dark:bg-slate-900/80 sticky top-0 z-40 shadow-[0_10px_30px_-10px_rgba(0,61,155,0.1)] border-b border-blue-50">
@@ -42,28 +43,49 @@ const DashboardNavbar = () => {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
-            <div className="hidden text-right md:block">
-              <p className="text-sm font-bold text-slate-800 leading-none capitalize">
-                {session?.user?.name || "Member"}
-              </p>
-              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-tighter mt-1">
-                {session?.user?.role || "Pet Lover"}
-              </p>
-            </div>
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm">
-              {session?.user?.image ? (
-                <img
-                  src={session.user.image}
-                  alt="User"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-600">
-                  <User size={20} />
-                </div>
-              )}
-            </div>
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-3 pl-4 border-l border-slate-100 hover:opacity-75 transition-opacity"
+            >
+              <div className="hidden text-right md:block">
+                <p className="text-sm font-bold text-slate-800 leading-none capitalize">
+                  {session?.user?.name || "Member"}
+                </p>
+                <p className="text-[10px] font-bold text-blue-500 uppercase tracking-tighter mt-1">
+                  {session?.user?.role || "Pet Lover"}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm">
+                {session?.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="User"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <User size={20} />
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-2 z-50">
+                <button
+                  onClick={() => {
+                    signOut({ callbackUrl: "/" });
+                    setShowProfileMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
