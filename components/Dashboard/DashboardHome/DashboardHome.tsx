@@ -6,9 +6,8 @@ import UserDashboard from "../UserDashboard/UserDashboard";
 
 const DashboardHome = () => {
   const { data: session, status } = useSession();
-  const userRole = session?.user?.role;
+  const userRole = session?.user?.role?.toLowerCase();
   console.log(userRole);
-
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -16,14 +15,19 @@ const DashboardHome = () => {
       </div>
     );
   }
+
+  if (!session || !userRole) {
+    return <div>Unauthorized - Please login</div>;
+  }
+
   if (userRole === "admin") {
     return <AdminDashboard />;
   } else if (userRole === "user") {
     return <UserDashboard />;
-  } else if (userRole === "teamLeader") {
+  } else if (userRole === "teamleader") {
     return <div>Team Leader Dashboard (Coming Soon)</div>;
   } else {
-    return <div>Unauthorized</div>;
+    return <div>Unauthorized - Invalid role</div>;
   }
 };
 
