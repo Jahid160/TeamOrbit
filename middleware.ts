@@ -3,16 +3,25 @@ import { NextResponse, NextRequest } from "next/server";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
   user: ["/dashboard/my-tasks"],
-  teamLeader: ["/dashboard/team", "/dashboard/projects"],
+  teamleader: ["/dashboard/team", "/dashboard/projects"],
   admin: ["/dashboard/user-management", "/dashboard/teamLeaders"],
 };
 
-export async function proxy(req: NextRequest): Promise<NextResponse> {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   const token = await getToken({ req });
   const { pathname } = req.nextUrl;
 
   const isAuthenticated = Boolean(token);
-  const userRole: string | undefined = token?.role;
+  const userRole: string | undefined = (token?.role as string)?.toLowerCase();
+
+  // Protect main dashboard route
+  if (pathname.startsWith("/dashboard")) {
+    if (!isAuthenticated) {
+      return NextResponse.redirect(
+        new URL(`/login?callbackUrl=${pathname}`, req.url),
+      );
+    }
+  }
 
   const privateRoutes = Object.values(ROLE_PERMISSIONS).flat();
   const isPrivateRoute = privateRoutes.some((route) =>
@@ -40,11 +49,5 @@ export async function proxy(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/projects/:path*",
-    "/dashboard/team/:path*",
-    "/dashboard/my-tasks/:path*",
-    "/dashboard/teamLeaders/:path*",
-    "/dashboard/user-management/:path*",
-  ],
+  matcher: ["/dashboard/:path*"],
 };

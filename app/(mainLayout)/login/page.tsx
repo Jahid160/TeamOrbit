@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 // Import React Icons
 import {
   LuMail,
@@ -15,6 +16,9 @@ import {
 import { FaGoogle, FaGithub } from "react-icons/fa";
 
 const LoginPage = () => {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +28,7 @@ const LoginPage = () => {
     await signIn("credentials", {
       email,
       password,
-      callbackUrl: "/dashboard",
+      callbackUrl,
     });
   };
 
@@ -110,7 +114,7 @@ const LoginPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-8">
             <button
               type="button"
-              onClick={() => signIn("google")}
+              onClick={() => signIn("google", { callbackUrl })}
               className="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container hover:bg-outline-variant/20 transition-all rounded-xl border border-outline-variant/30"
             >
               <FaGoogle className="text-on-surface-variant" />
@@ -120,7 +124,7 @@ const LoginPage = () => {
             </button>
             <button
               type="button"
-              onClick={() => signIn("github")}
+              onClick={() => signIn("github", { callbackUrl })}
               className="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container hover:bg-outline-variant/20 transition-all rounded-xl border border-outline-variant/30"
             >
               <FaGithub className="text-on-surface-variant" />

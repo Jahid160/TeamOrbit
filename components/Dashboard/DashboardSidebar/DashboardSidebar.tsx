@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import NextLink from "next/link";
 import {
   LayoutDashboard,
@@ -33,6 +33,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   const { data: session } = useSession();
   const role = session?.user?.role?.toLowerCase();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const adminNav = [
     {
@@ -42,7 +43,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
     },
     { name: "Team Leaders", href: "/dashboard/teamLeaders", icon: ShieldUser },
     { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
-    { name: "Tasks", href: "/dashboard/tasks", icon: ShieldCheck },
+    { name: "Tasks", href: "/dashboard/admin-tasks", icon: ShieldCheck },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   ];
 
@@ -164,6 +165,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
             </NextLink>
 
             <button
+              onClick={() => setShowLogoutConfirm(true)}
               className={`flex items-center gap-3 py-3 text-red-500 hover:bg-red-50 rounded-lg transition-all ${isCollapsed ? "justify-center w-12" : "px-4 w-full"}`}
             >
               <LogOut size={22} />
@@ -174,6 +176,38 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
           </div>
         </div>
       </aside>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4 animate-in fade-in zoom-in-95">
+            <h2 className="text-lg font-bold text-slate-900 mb-2">
+              Confirm Logout
+            </h2>
+            <p className="text-slate-600 mb-6">
+              Are you sure you want to logout from your account?
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
