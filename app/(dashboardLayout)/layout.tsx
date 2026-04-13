@@ -36,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <main
           className={`flex-1 ${contentMargin} p-4 md:p-6 pt-[80px] w-full transition-all duration-300 ease-in-out`}
         >
-          <div className="mx-auto max-w-[1600px]">{children}</div>
+          <div className="mx-auto max-w-[1600px] mt-7">{children}</div>
         </main>
       </div>
     </div>
