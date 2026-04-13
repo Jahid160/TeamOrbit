@@ -10,9 +10,6 @@ import {
   FolderKanban,
   ShieldCheck,
   BarChart3,
-  PawPrint,
-  HeartPlus,
-  ShoppingBagIcon,
   Settings,
   LogOut,
   ChevronLeft,
@@ -21,6 +18,7 @@ import {
   X,
   ShieldUser,
   User,
+  FolderKanbanIcon,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -54,9 +52,26 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   ];
 
   const userNav = [
-    { name: "My Tasks", href: "/dashboard/my-tasks", icon: ShieldCheck },
-    { name: "my process", href: "/dashboard/my-process", icon: BarChart3 },
-    { name: "Profile", href: "/dashboard/profile", icon: User },
+    {
+      name: "My Tasks",
+      href: "/dashboard/my-tasks",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Team Projects",
+      href: "/dashboard/projects",
+      icon: FolderKanbanIcon,
+    },
+    {
+      name: "My Team",
+      href: "/dashboard/team-list",
+      icon: Users,
+    },
+    {
+      name: "Performance",
+      href: "/dashboard/my-stats",
+      icon: BarChart3,
+    },
   ];
 
   const navItems =
