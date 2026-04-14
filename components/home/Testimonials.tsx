@@ -49,7 +49,7 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className=" px-6 max-w-7xl mx-auto bg-gray-200 overflow-hidden">
+    <section className=" px-6 mt-16 max-w-7xl mx-auto bg-gray-50 overflow-hidden">
       <div className="text-center mb-16">
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}

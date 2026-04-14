@@ -1,155 +1,96 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChevronLeft, ChevronRight, LogIn } from "lucide-react";
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
-const slides = [
-  {
-    id: 1,
-    title: "Manage Your Team Smarter",
-    desc: "TeamOrbit brings all your tasks, teammates, and tools together in one powerful, unified workspace.",
-    image: "/thero1.png",
-  },
-  {
-    id: 2,
-    title: "Track Progress in Real-Time",
-    desc: "Visualize success with intuitive boards and real-time status updates for every project phase.",
-    image: "/thero2.png",
-  },
-  {
-    id: 3,
-    title: "Stay Organized & Fast",
-    desc: "Experience the fastest way to manage complex projects and hit your deadlines without the stress.",
-    image: "/thero4.png",
-  },
-];
+interface HeroSectionProps {
+  title?: string;
+  subtitle?: string;
+  primaryBtnText?: string;
+  secondaryBtnText?: string;
+}
 
-const Hero = () => {
-  const [current, setCurrent] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const nextSlide = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % slides.length);
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  }, []);
-
-  // Slider Auto-play logic
-  useEffect(() => {
-    intervalRef.current = setInterval(nextSlide, 5000);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [nextSlide]);
-
+const HeroSection: React.FC<HeroSectionProps> = ({ 
+  title = "Manage your teamwork more intelligently",
+  subtitle = "Task management has never been easier. Track every stage of your projects with TeamOrbit and boost your team's productivity instantly.",
+  primaryBtnText = "Get Started for Free",
+  secondaryBtnText = "Watch Demo"
+}) => {
   return (
-    
-    <section className="bg-gray-200 max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl mt-10">
-      
-      {/*  */}
-      <div className="relative w-full h-[85vh] md:h-[90vh] overflow-hidden bg-gray-950">
+    <section className="min-h-[85vh] flex items-center bg-[#fcfcfd] px-6 mt-6 lg:px-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={current}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full"
-          >
-           
-            <Image
-              src={slides[current].image}
-              alt={slides[current].title}
-              fill
+        {/* Left Side: Content */}
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="z-10 text-center lg:text-left"
+        >
+          <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-[1.1] mb-6">
+            Manage your teamwork <br />
+            <span className="text-indigo-600">more intelligently</span>
+          </h1>
+          <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-md mx-auto lg:mx-0">
+            {subtitle}
+          </p>
+          
+          <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all hover:shadow-indigo-200 shadow-lg active:scale-95">
+              {primaryBtnText}
+            </button>
+            <button className="bg-white border border-slate-200 hover:border-indigo-600 px-8 py-4 rounded-xl font-semibold transition-all text-slate-700 active:scale-95">
+              {secondaryBtnText}
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Right Side: Image/Task Board Preview */}
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative"
+        >
+          {/* Background Decorative Element */}
+          <div className="absolute -top-10 -right-10 w-72 h-72 bg-indigo-100 rounded-full blur-3xl opacity-40" />
+          
+          {/* Main Preview Image */}
+          <div className="relative z-10 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 bg-white">
+            <Image 
+              src="/task.png" // Ensure this image is in your /public folder
+              alt="TeamOrbit Dashboard Preview"
+              width={850}
+              height={550}
               priority
-              className="object-cover"
-              sizes="100vw"
+              className="w-full h-auto transform hover:scale-105 transition-transform duration-1000"
             />
+          </div>
 
-            {/* image dark gradient*/}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
-
-            {/* lift side text */}
-            <div className="relative h-full flex flex-col justify-center items-start px-6 md:px-16 z-20">
-              <motion.div
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-                className="max-w-3xl space-y-6"
-              >
-                
-                <span className="inline-block px-4 py-1.5 bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-full text-xs md:text-sm font-semibold mb-2 backdrop-blur-md uppercase tracking-wider">
-                  Task Management Platform
-                </span>
-
-                <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1] drop-shadow-xl">
-                  {slides[current].title}
-                </h1>
-                  <p className="text-base md:text-xl text-gray-200 font-medium max-w-2xl leading-relaxed">
-                  {slides[current].desc}
-                </p>
-
-                {/* action button */}
-                <div className="hero-cta mt-8 flex flex-wrap items-center justify-start gap-4">
-                  <Link
-                    href="/auth/register"
-                    className="btn btn-primary rounded-2xl px-8 h-12 text-white shadow-xl shadow-primary/30 border-0 hover:scale-105 transition-all flex items-center gap-2"
-                  >
-                    Get Started <ArrowRight size={20} />
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="btn bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl h-12 px-8 text-white border border-white/20 shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-                  >
-                    <LogIn size={20} /> Log In
-                  </Link>
-                </div>
-              </motion.div>
+          {/* Floating Achievement Card */}
+          <motion.div 
+            animate={{ y: [0, -15, 0] }}
+            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+            className="absolute -bottom-8 -left-8 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 hidden md:flex items-center gap-4 z-20"
+          >
+            <div className="bg-green-100 p-2 rounded-full text-green-600">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800">Task Completed!</p>
+              <p className="text-xs text-slate-500">Project Milestone Reached</p>
             </div>
           </motion.div>
-        </AnimatePresence>
+        </motion.div>
 
-        {/* navigtion arro button */}
-        <div className="absolute inset-0 flex items-center justify-between px-4 z-40 pointer-events-none">
-          <button
-            onClick={prevSlide}
-            className="p-2 md:p-3 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all pointer-events-auto group"
-          >
-            <ChevronLeft size={32} className="group-hover:scale-110 transition-transform" />
-          </button>
-
-          <button
-            onClick={nextSlide}
-            className="p-2 md:p-3 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all pointer-events-auto group"
-          >
-            <ChevronRight size={32} className="group-hover:scale-110 transition-transform" />
-          </button>
-        </div>
-
-        {/* slider dot */}
-        <div className="absolute bottom-12 left-6 md:left-16 flex gap-4 z-40">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrent(index)}
-              className={`transition-all duration-500 h-2.5 rounded-full ${
-                index === current
-                  ? "w-12 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                  : "w-3 bg-white/20 hover:bg-white/40"
-              }`}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
 };
 
-export default Hero;
+export default HeroSection;
