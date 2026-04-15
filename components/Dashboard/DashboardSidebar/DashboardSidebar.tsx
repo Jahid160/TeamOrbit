@@ -77,7 +77,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   const navItems =
     role === "admin"
       ? adminNav
-      : role === "teamleader"
+      : role === "teamLeader"
         ? teamLeaderNav
         : userNav;
 

@@ -2,9 +2,25 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse, NextRequest } from "next/server";
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
-  user: ["/dashboard/my-tasks"],
-  teamleader: ["/dashboard/team", "/dashboard/projects"],
-  admin: ["/dashboard/user-management", "/dashboard/teamLeaders"],
+  user: [
+    "/dashboard/my-tasks",
+    "/dashboard/my-stats",
+    "/dashboard/team-list",
+    "/dashboard/projects",
+  ],
+  teamleader: [
+    "/dashboard/team",
+    "/dashboard/projects",
+    "/dashboard/tasks",
+    "/dashboard/admin-tasks",
+  ],
+  admin: [
+    "/dashboard/user-management",
+    "/dashboard/teamLeaders",
+    "/dashboard/projects",
+    "/dashboard/admin-tasks",
+    "/dashboard/analytics",
+  ],
 };
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
@@ -13,7 +29,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   const isAuthenticated = Boolean(token);
   const userRole: string | undefined = (token?.role as string)?.toLowerCase();
-
+  console.log(userRole);
   // Protect main dashboard route
   if (pathname.startsWith("/dashboard")) {
     if (!isAuthenticated) {
@@ -49,5 +65,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  // matcher: ["/dashboard/:path*"],
 };
