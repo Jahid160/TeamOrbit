@@ -10,7 +10,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  // useState-এ বুলিয়ান টাইপ ডিফাইন করা হয়েছে
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   const sidebarWidth: string = isCollapsed ? "lg:pl-[80px]" : "lg:pl-[240px]";
