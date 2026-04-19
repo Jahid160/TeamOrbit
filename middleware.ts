@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   const isAuthenticated = Boolean(token);
   const userRole: string | undefined = (token?.role as string)?.toLowerCase();
-  console.log(userRole);
+
   // Protect main dashboard route
   if (pathname.startsWith("/dashboard")) {
     if (!isAuthenticated) {

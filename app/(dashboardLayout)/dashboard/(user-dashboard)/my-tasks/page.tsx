@@ -142,7 +142,7 @@ const MyTasks = () => {
                     <span className="text-[9px] font-black text-slate-300 uppercase tracking-tight">Status:</span>
                     <select className="bg-slate-50 border-none text-[10px] font-bold text-[#003d9b] rounded-md px-2 py-0.5 focus:ring-0 cursor-pointer hover:bg-blue-50 transition-colors">
                       <option>To Do</option>
-                      <option selected>In Progress</option>
+                      <option defaultChecked>In Progress</option>
                       <option>Review</option>
                       <option>Done</option>
                     </select>
