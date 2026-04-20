@@ -20,29 +20,38 @@ import {
   User,
   FolderKanbanIcon,
 } from "lucide-react";
+import Link from "next/link";
 
 interface SidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (value: boolean) => void;
+  role: string | undefined;
 }
 
-const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
+const DashboardSidebar = ({
+  isCollapsed,
+  setIsCollapsed,
+  role,
+}: SidebarProps) => {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const role = session?.user?.role?.toLowerCase();
+  const userRole = role?.toLowerCase();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const adminNav = [
-    {
-      name: "User Management",
-      href: "/dashboard/user-management",
-      icon: User,
-    },
+    { name: "User Management", href: "/dashboard/user-management", icon: User },
     { name: "Team Leaders", href: "/dashboard/teamLeaders", icon: ShieldUser },
     { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
     { name: "Tasks", href: "/dashboard/admin-tasks", icon: ShieldCheck },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+    { name: "Add Task", href: "/dashboard/add-task", icon: LayoutDashboard },
+    { name: "profile", href: "/dashboard/profile", icon: User },
+    // { name: "settings", href: "/dashboard/settings", icon: Settings },
+    {
+      name: "Team Management",
+      href: "/dashboard/team-management",
+      icon: Users,
+    },
   ];
 
   const teamLeaderNav = [
@@ -52,32 +61,20 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
   ];
 
   const userNav = [
-    {
-      name: "My Tasks",
-      href: "/dashboard/my-tasks",
-      icon: ShieldCheck,
-    },
+    { name: "My Tasks", href: "/dashboard/my-tasks", icon: ShieldCheck },
     {
       name: "Team Projects",
       href: "/dashboard/projects",
       icon: FolderKanbanIcon,
     },
-    {
-      name: "My Team",
-      href: "/dashboard/team-list",
-      icon: Users,
-    },
-    {
-      name: "Performance",
-      href: "/dashboard/my-stats",
-      icon: BarChart3,
-    },
+    { name: "My Team", href: "/dashboard/team-list", icon: Users },
+    { name: "Performance", href: "/dashboard/my-stats", icon: BarChart3 },
   ];
 
   const navItems =
-    role === "admin"
+    userRole === "admin"
       ? adminNav
-      : role === "teamLeader"
+      : userRole === "teamLeader"
         ? teamLeaderNav
         : userNav;
 
@@ -94,7 +91,27 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
 
   return (
     <>
-      {/* Mobile Toggle */}
+      {/* ========================================= */}
+      {/* OVERLAYS FOR "CLICK OUTSIDE" FUNCTIONALITY */}
+      {/* ========================================= */}
+
+      {/* 1. Mobile Overlay (Semi-transparent backdrop) */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-slate-800/20 backdrop-blur-sm z-[45] lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* 2. Desktop Overlay (Invisible, catches clicks to auto-collapse) */}
+      {/* {!isCollapsed && (
+        <div
+          className="fixed inset-0 z-[45] hidden lg:block bg-transparent"
+          onClick={() => setIsCollapsed(true)}
+        />
+      )} */}
+
+      {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-[#003d9b] text-white rounded-lg"
@@ -102,12 +119,13 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
+      {/* Sidebar Container */}
       <aside
         className={`fixed left-0 top-0 h-screen bg-[#f1f3ff] z-50 flex flex-col transition-all duration-300 border-r border-blue-100 
         ${isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "lg:w-20" : "lg:w-64"}`}
       >
-        {/* Toggle Button */}
+        {/* Toggle Button for Desktop */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="hidden lg:flex absolute -right-3 top-10 z-[100] bg-white border border-blue-100 rounded-full p-1 text-[#003d9b] hover:bg-[#003d9b] hover:text-white shadow-md transition-all"
@@ -122,9 +140,12 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
           <div
             className={`mb-10 flex flex-col items-center ${isCollapsed ? "" : "items-start"}`}
           >
-            <h1 className="text-xl font-black text-[#003d9b] tracking-tighter">
+            <Link
+              href={"/"}
+              className="text-xl font-black text-[#003d9b] tracking-tighter"
+            >
               {isCollapsed ? "T" : "TeamOrbit"}
-            </h1>
+            </Link>
             {!isCollapsed && (
               <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
                 Precision
@@ -181,7 +202,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
 
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className={`flex items-center gap-3 py-3 text-red-500 hover:bg-red-50 rounded-lg transition-all ${isCollapsed ? "justify-center w-12" : "px-4 w-full"}`}
+              className={`flex items-center gap-3 py-3 text-rose-500 hover:bg-rose-50 rounded-lg transition-all ${isCollapsed ? "justify-center w-12" : "px-4 w-full"}`}
             >
               <LogOut size={22} />
               {!isCollapsed && (
@@ -194,19 +215,19 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4 animate-in fade-in zoom-in-95">
-            <h2 className="text-lg font-bold text-slate-900 mb-2">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[999]">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm mx-4 animate-in fade-in zoom-in-95">
+            <h2 className="text-lg font-bold text-slate-800 mb-2">
               Confirm Logout
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-500 mb-6">
               Are you sure you want to logout from your account?
             </p>
 
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors font-medium"
+                className="px-4 py-2 rounded-xl text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors font-semibold"
               >
                 Cancel
               </button>
@@ -215,7 +236,7 @@ const DashboardSidebar = ({ isCollapsed, setIsCollapsed }: SidebarProps) => {
                   setShowLogoutConfirm(false);
                   signOut({ callbackUrl: "/" });
                 }}
-                className="px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors font-medium"
+                className="px-4 py-2 rounded-xl text-white bg-rose-500 hover:bg-rose-600 transition-colors font-semibold shadow-md shadow-rose-200"
               >
                 Logout
               </button>

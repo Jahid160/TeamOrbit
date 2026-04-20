@@ -1,44 +1,24 @@
-"use client";
+// app/dashboard/layout.tsx (Server Component)
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import { redirect } from "next/navigation";
+import DashboardWrapper from "@/components/Dashboard/DashboardWrapper/DashboardWrapper";
 
-import DashboardNavbar from "@/components/Dashboard/DashboardNavbar";
-import DashboardSidebar from "@/components/Dashboard/DashboardSidebar/DashboardSidebar";
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // সার্ভার থেকে সেশন ডাটা নিন
+  const session = await getServerSession(authOptions);
 
-import React, { useState, ReactNode } from "react";
+  // সেশন না থাকলে আগেই লগইন পেজে পাঠান
+  if (!session) {
+    redirect("/?loginTrigger=true");
+  }
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
-
+  // ক্লায়েন্ট র‍্যাপারকে সেশন এবং চিলড্রেন পাস করুন
   return (
-    <div className="bg-gray-50 min-h-screen font-sans">
-      {/* 1. The Top Navbar - only shift on desktop when sidebar is present */}
-      <nav
-        className={`fixed top-0 left-0 right-0 h-[80px] z-40 bg-white border-b border-gray-200 transition-all duration-300 ${
-          isCollapsed ? "lg:ml-[80px]" : "lg:ml-[240px]"
-        }`}
-      >
-        <DashboardNavbar isCollapsed={isCollapsed} />
-      </nav>
-
-      {/* 2. The Sidebar */}
-      <DashboardSidebar
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-      />
-
-      {/* 3. Main Content Area - only add margin on desktop */}
-      <main
-        className={`min-h-screen bg-gray-50 transition-all duration-300 ease-in-out pt-[80px] ${
-          isCollapsed ? "lg:ml-[80px]" : "lg:ml-[240px]"
-        }`}
-      >
-        <div className="p-4 md:p-6 mx-auto max-w-[1600px]">{children}</div>
-      </main>
-    </div>
+    <DashboardWrapper role={session?.user?.role}>{children}</DashboardWrapper>
   );
-};
-
-export default Layout;
+}
