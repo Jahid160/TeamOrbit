@@ -1,18 +1,23 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse, NextRequest } from "next/server";
 
+// middleware.ts
+
 const ROLE_PERMISSIONS: Record<string, string[]> = {
   user: [
     "/dashboard/my-tasks",
     "/dashboard/my-stats",
     "/dashboard/team-list",
     "/dashboard/projects",
+    "/dashboard/profile",
+    "/dashboard/settings",
   ],
   teamleader: [
     "/dashboard/team",
     "/dashboard/projects",
     "/dashboard/tasks",
-    "/dashboard/admin-tasks",
+    "/dashboard/profile",
+    "/dashboard/settings",
   ],
   admin: [
     "/dashboard/user-management",
@@ -20,6 +25,10 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "/dashboard/projects",
     "/dashboard/admin-tasks",
     "/dashboard/analytics",
+    "/dashboard/team-management", // এটি অ্যাড করলাম
+    "/dashboard/add-task", // আপনার সাইডবারে এটিও ছিল
+    "/dashboard/profile",
+    "/dashboard/settings",
   ],
 };
 
@@ -30,33 +39,25 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const isAuthenticated = Boolean(token);
   const userRole: string | undefined = (token?.role as string)?.toLowerCase();
 
-  // Protect main dashboard route
+  // (Dashboard Route Protection)
   if (pathname.startsWith("/dashboard")) {
     if (!isAuthenticated) {
       return NextResponse.redirect(
         new URL(`/login?callbackUrl=${pathname}`, req.url),
       );
     }
-  }
 
-  const privateRoutes = Object.values(ROLE_PERMISSIONS).flat();
-  const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
+    //
+    if (pathname === "/dashboard") return NextResponse.next();
 
-  if (isPrivateRoute) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(
-        new URL(`/?loginTrigger=true&callbackUrl=${pathname}`, req.url),
-      );
-    }
-
-    const allowedRoutes: string[] = ROLE_PERMISSIONS[userRole] || [];
+    //
+    const allowedRoutes: string[] = ROLE_PERMISSIONS[userRole || ""] || [];
     const hasPermission: boolean = allowedRoutes.some((route) =>
       pathname.startsWith(route),
     );
 
     if (!hasPermission) {
+      // Unauthorized access - redirect to dashboard home or show an error page
       return NextResponse.redirect(new URL("/", req.url));
     }
   }
@@ -65,5 +66,6 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  // matcher: ["/dashboard/:path*"],
+  //Matcher
+  matcher: ["/dashboard/:path*"],
 };
