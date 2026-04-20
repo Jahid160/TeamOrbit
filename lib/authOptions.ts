@@ -77,6 +77,104 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log(
+        "📌 SignIn callback triggered for:",
+        user.email,
+        "Provider:",
+        account?.provider,
+      );
+
+      // Handle OAuth sign-in (Google, GitHub, etc.)
+      if (account && account.type === "oauth") {
+        try {
+          console.log("🔍 Processing OAuth login...");
+
+          // Check if user exists by email
+          let dbUser = await db.user.findUnique({
+            where: { email: user.email! },
+          });
+
+          console.log("👤 Existing user found:", dbUser ? "Yes" : "No");
+
+          // Create user if doesn't exist
+          if (!dbUser) {
+            console.log("➕ Creating new user...");
+            dbUser = await db.user.create({
+              data: {
+                email: user.email!,
+                name: user.name || profile?.name || "",
+                image: user.image || profile?.image || "",
+                role: "user",
+              },
+            });
+            console.log("✅ User created:", dbUser.id);
+          } else {
+            // Update user if profile info changed
+            const updateData: any = {};
+            if (dbUser.image !== user.image)
+              updateData.image = user.image || dbUser.image;
+            if (dbUser.name !== user.name)
+              updateData.name = user.name || dbUser.name;
+
+            if (Object.keys(updateData).length > 0) {
+              console.log("📝 Updating user info...");
+              await db.user.update({
+                where: { id: dbUser.id },
+                data: updateData,
+              });
+              console.log("✅ User updated");
+            }
+          }
+
+          // Link account to user if not already linked
+          const existingAccount = await db.account.findUnique({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              },
+            },
+          });
+
+          console.log(
+            "🔗 Linked account found:",
+            existingAccount ? "Yes" : "No",
+          );
+
+          if (!existingAccount) {
+            console.log("➕ Linking account...");
+            await db.account.create({
+              data: {
+                userId: dbUser.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                refresh_token: account.refresh_token,
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state,
+              },
+            });
+            console.log("✅ Account linked successfully");
+          }
+
+          console.log("🎉 SignIn successful");
+          return true;
+        } catch (error) {
+          console.error("❌ SignIn error:", error);
+          // Allow login to proceed even if DB save fails
+          // This prevents being locked out
+          return true;
+        }
+      }
+
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -84,10 +182,21 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
-      }
-      // Ensure role is preserved in token
-      if (!token.role && user) {
-        token.role = (user as any).role;
+      } else if (token.email && !token.role) {
+        // Fetch user from database if JWT doesn't have role
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { email: token.email as string },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role;
+            token.name = dbUser.name;
+            token.picture = dbUser.image;
+          }
+        } catch (error) {
+          console.error("Error fetching user in JWT callback:", error);
+        }
       }
       return token;
     },
