@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-
+import { UserRole, UserStatus } from "@prisma/client";
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
@@ -32,7 +32,8 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        role: "user", // Default role, you can adjust this as needed
+        role: UserRole.user,
+        status: UserStatus.active,
       },
     });
 

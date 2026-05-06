@@ -25,10 +25,11 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "/dashboard/projects",
     "/dashboard/admin-tasks",
     "/dashboard/analytics",
-    "/dashboard/team-management", // এটি অ্যাড করলাম
-    "/dashboard/add-task", // আপনার সাইডবারে এটিও ছিল
+    "/dashboard/team-management", 
+    "/dashboard/add-task",
     "/dashboard/profile",
     "/dashboard/settings",
+    "/dashboard/allTasks"
   ],
 };
 

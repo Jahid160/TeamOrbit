@@ -2,8 +2,11 @@
 import { defineConfig } from "@prisma/config";
 import * as dotenv from "dotenv";
 
-// Manually load the .env file so process.env.DATABASE_URL isn't undefined
 dotenv.config();
+
+if (!process.env.DATABASE_URL) {
+  console.error("❌ Error: DATABASE_URL is not defined in your .env file!");
+}
 
 export default defineConfig({
   schema: "./prisma/schema.prisma",

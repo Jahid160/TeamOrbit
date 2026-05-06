@@ -43,6 +43,7 @@ const DashboardSidebar = ({
     { name: "Team Leaders", href: "/dashboard/teamLeaders", icon: ShieldUser },
     { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
     { name: "Tasks", href: "/dashboard/admin-tasks", icon: ShieldCheck },
+    {name: "All Tasks", href: "/dashboard/allTasks", icon: ShieldCheck},
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
     { name: "Add Task", href: "/dashboard/add-task", icon: LayoutDashboard },
     { name: "profile", href: "/dashboard/profile", icon: User },

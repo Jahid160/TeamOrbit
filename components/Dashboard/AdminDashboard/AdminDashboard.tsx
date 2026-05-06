@@ -117,7 +117,7 @@ const AdminDashboard = () => {
               </div>
               <p className="text-sm text-slate-500 mb-6 leading-relaxed font-medium">
                 Based on your recent patterns, you might need to initiate the
-                "Final Render Review" for the Riverside Project.
+                &quot;Final Render Review&quot; for the Riverside Project.
               </p>
               <button className="text-[10px] font-black text-[#003d9b] hover:tracking-widest transition-all flex items-center gap-2 uppercase">
                 Create Task <ArrowUpRight size={14} />
@@ -159,7 +159,8 @@ const AdminDashboard = () => {
                   <span className="absolute text-[10px] font-black">85%</span>
                 </div>
                 <p className="text-[11px] text-slate-500 font-bold leading-tight uppercase">
-                  Probability of hitting "Structural Phase" deadline is high.
+                  Probability of hitting &quot;Structural Phase&quot; deadline
+                  is high.
                 </p>
               </div>
             </div>
