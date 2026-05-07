@@ -43,7 +43,6 @@ export const authOptions: NextAuthOptions = {
             where: { email: credentials.email },
           });
 
-          // Ensure user exists and has a password (social-only users won't have one)
           if (!user || !user.password) {
             throw new Error("Invalid credentials");
           }
@@ -57,6 +56,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid password");
           }
 
+          // Return user object with role for the JWT callback
           return {
             id: user.id,
             name: user.name,
@@ -65,7 +65,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error("Auth error:", error);
+          console.error("Authorize error:", error);
           throw error;
         }
       },
@@ -78,56 +78,27 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log(
-        "📌 SignIn callback triggered for:",
-        user.email,
-        "Provider:",
-        account?.provider,
-      );
-
-      // Handle OAuth sign-in (Google, GitHub, etc.)
       if (account && account.type === "oauth") {
         try {
-          console.log("🔍 Processing OAuth login...");
+          const email = user.email!;
 
-          // Check if user exists by email
+          // 1. Find or Create the user in the database
           let dbUser = await db.user.findUnique({
-            where: { email: user.email! },
+            where: { email },
           });
 
-          console.log("👤 Existing user found:", dbUser ? "Yes" : "No");
-
-          // Create user if doesn't exist
           if (!dbUser) {
-            console.log("➕ Creating new user...");
             dbUser = await db.user.create({
               data: {
-                email: user.email!,
-                name: user.name || profile?.name || "",
+                email,
+                name: user.name || profile?.name || "User",
                 image: user.image || profile?.image || "",
-                role: "user",
+                role: "user", // Default role for new signups
               },
             });
-            console.log("✅ User created:", dbUser.id);
-          } else {
-            // Update user if profile info changed
-            const updateData: any = {};
-            if (dbUser.image !== user.image)
-              updateData.image = user.image || dbUser.image;
-            if (dbUser.name !== user.name)
-              updateData.name = user.name || dbUser.name;
-
-            if (Object.keys(updateData).length > 0) {
-              console.log("📝 Updating user info...");
-              await db.user.update({
-                where: { id: dbUser.id },
-                data: updateData,
-              });
-              console.log("✅ User updated");
-            }
           }
 
-          // Link account to user if not already linked
+          // 2. Link account if not already present
           const existingAccount = await db.account.findUnique({
             where: {
               provider_providerAccountId: {
@@ -137,13 +108,7 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          console.log(
-            "🔗 Linked account found:",
-            existingAccount ? "Yes" : "No",
-          );
-
           if (!existingAccount) {
-            console.log("➕ Linking account...");
             await db.account.create({
               data: {
                 userId: dbUser.id,
@@ -159,43 +124,32 @@ export const authOptions: NextAuthOptions = {
                 session_state: account.session_state,
               },
             });
-            console.log("✅ Account linked successfully");
           }
-
-          console.log("🎉 SignIn successful");
           return true;
         } catch (error) {
-          console.error("❌ SignIn error:", error);
-          // Allow login to proceed even if DB save fails
-          // This prevents being locked out
+          console.error("OAuth SignIn Error:", error);
           return true;
         }
       }
-
       return true;
     },
 
     async jwt({ token, user }) {
+      // If 'user' exists, it's the first time this callback is run after login
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.name = user.name;
-        token.email = user.email;
-        token.picture = user.image;
-      } else if (token.email && !token.role) {
-        // Fetch user from database if JWT doesn't have role
-        try {
-          const dbUser = await db.user.findUnique({
-            where: { email: token.email as string },
-          });
-          if (dbUser) {
-            token.id = dbUser.id;
-            token.role = dbUser.role;
-            token.name = dbUser.name;
-            token.picture = dbUser.image;
-          }
-        } catch (error) {
-          console.error("Error fetching user in JWT callback:", error);
+      }
+
+      // Safety check: ensure role is always present by fetching if missing
+      if (!token.role && token.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: token.email },
+          select: { id: true, role: true },
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
         }
       }
       return token;
