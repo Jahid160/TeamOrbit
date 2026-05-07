@@ -1,43 +1,64 @@
-// schema.prisma
+// prisma/schema.prisma
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
 
 datasource db {
   provider = "postgresql"
-  // DO NOT add the url line here at all
+
 }
 
-generator client {
-  provider = "prisma-client-js"
+// --- ENUMS ---
+enum UserRole {
+  admin   
+  teamLeader   
+  user
 }
 
-// User model compatible with NextAuth.js
+enum UserStatus {
+  active
+  inactive
+}
+
+// --- MODELS ---
+
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
-  password      String?   // Optional: Only needed for Credentials provider
+  password      String?  
   image         String?
+  role          UserRole  @default(user)
+  status        UserStatus @default(active)
   emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations for NextAuth
   accounts      Account[]
   sessions      Session[]
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  tasks         CreatingTask[]
+
+  @@map("users")
 }
 
-// Required for NextAuth Social Logins (Google, GitHub, etc.)
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -50,4 +71,19 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CreatingTask {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("pending") 
+  priority    String   @default("medium") 
+  deadline    DateTime?                   
+  image       String?  @db.Text          
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
 }

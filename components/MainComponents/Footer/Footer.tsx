@@ -1,59 +1,69 @@
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 px-6 py-10 mt-10">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-        {/* Logo & Description */}
+    <footer className="bg-[#f5f7fb] text-gray-600 px-6 py-12 mt-16 rounded-xl border">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
+
+        {/* Brand */}
         <div>
-          <h2 className="text-xl font-bold text-white">🚀 TeamOrbit</h2>
-          <p className="mt-3 text-sm">
-            TeamOrbit is a modern team collaboration and task management
-            platform to boost productivity and teamwork.
+          <h2 className="text-lg font-bold tracking-widest text-blue-700">
+            ARCHITECT
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed">
+            Precision Fluidity in every structure. Elevating the standard of
+            collaborative architecture.
           </p>
         </div>
 
-        {/* Links */}
+        {/* Product */}
         <div>
-          <h3 className="text-white font-semibold mb-3">Quick Links</h3>
+          <h3 className="text-sm font-semibold text-gray-800 mb-4 tracking-wide">
+            PRODUCT
+          </h3>
           <ul className="space-y-2 text-sm">
-            <li>
-              <a href="/dashboard" className="hover:text-white">
-                Dashboard
-              </a>
-            </li>
-            <li>
-              <a href="/tasks" className="hover:text-white">
-                Tasks
-              </a>
-            </li>
-            <li>
-              <a href="/team" className="hover:text-white">
-                Team
-              </a>
+            <li className="hover:text-black cursor-pointer">Dashboard</li>
+            <li className="hover:text-black cursor-pointer">Projects</li>
+            <li className="hover:text-black cursor-pointer">
+              Team Management
             </li>
           </ul>
         </div>
 
-        {/* Contact / Social */}
+        {/* Resources */}
         <div>
-          <h3 className="text-white font-semibold mb-3">Contact</h3>
-          <p className="text-sm">Email: support@teamorbit.com</p>
-          <div className="flex gap-4 mt-3">
-            <a href="#" className="hover:text-white">
-              🌐
-            </a>
-            <a href="#" className="hover:text-white">
-              🐦
-            </a>
-            <a href="#" className="hover:text-white">
-              💼
-            </a>
-          </div>
+          <h3 className="text-sm font-semibold text-gray-800 mb-4 tracking-wide">
+            RESOURCES
+          </h3>
+          <ul className="space-y-2 text-sm">
+            <li className="hover:text-black cursor-pointer">Documentation</li>
+            <li className="hover:text-black cursor-pointer">Help Center</li>
+            <li className="hover:text-black cursor-pointer">Community</li>
+          </ul>
+        </div>
+
+        {/* Legal */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-800 mb-4 tracking-wide">
+            LEGAL
+          </h3>
+          <ul className="space-y-2 text-sm">
+            <li className="hover:text-black cursor-pointer">Privacy Policy</li>
+            <li className="hover:text-black cursor-pointer">Terms of Service</li>
+            <li className="hover:text-black cursor-pointer">Cookie Settings</li>
+          </ul>
         </div>
       </div>
 
       {/* Bottom */}
-      <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
-        © {new Date().getFullYear()} TeamOrbit. All rights reserved.
+      <div className="flex flex-col md:flex-row justify-between items-center mt-10 pt-6 border-t text-sm">
+        <p>
+          © {new Date().getFullYear()} Architect Precision Fluidity. All rights
+          reserved.
+        </p>
+
+        <div className="flex gap-4 mt-4 md:mt-0 text-lg">
+          <span className="cursor-pointer hover:text-black">🌐</span>
+          <span className="cursor-pointer hover:text-black">🔗</span>
+        </div>
       </div>
     </footer>
   );
