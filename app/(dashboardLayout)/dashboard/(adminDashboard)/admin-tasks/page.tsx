@@ -22,7 +22,7 @@ import {
   Send,
 } from "lucide-react";
 
-const TaskDetails = () => {
+const taskEditPage = () => {
   return (
     <div className="flex flex-col w-full pb-10">
       {/* ======================================= */}
@@ -329,8 +329,8 @@ const TaskDetails = () => {
                     </span>
                   </p>
                   <p className="text-sm text-slate-600">
-                    I've uploaded the new seismic charts. Please verify against
-                    the 2024 building codes.
+                    I&apos;ve uploaded the new seismic charts. Please verify
+                    against the 2024 building codes.
                   </p>
                 </div>
               </div>
@@ -382,4 +382,4 @@ const TaskDetails = () => {
   );
 };
 
-export default TaskDetails;
+export default taskEditPage;

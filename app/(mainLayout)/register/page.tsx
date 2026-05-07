@@ -72,8 +72,9 @@ const RegisterPage = () => {
         toast.success("Redirecting to dashboard...");
         router.push("/dashboard");
       }
-    } catch (error: any) {
-      toast.error(error.message || "An unexpected error occurred", {
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(msg || "An unexpected error occurred", {
         id: toastId,
       });
     } finally {
