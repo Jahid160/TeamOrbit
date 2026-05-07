@@ -38,7 +38,6 @@ const TaskListClient = ({
   const [statusFilter, setStatusFilter] = useState("all");
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  // ১. Debounce Logic: ২ সেকেন্ড পর পর সার্চ ভ্যালু আপডেট হবে
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(inputValue);
@@ -88,16 +87,32 @@ const TaskListClient = ({
   };
 
   const handleDelete = async (id: string) => {
-    const result = await showConfirmDialog();
+    const result = await showConfirmDialog(
+      "Are you sure?",
+      "You won't be able to revert this task!",
+      "Yes, delete it!",
+      "warning",
+    );
+
     if (result.isConfirmed) {
       setLoadingId(id);
-      const response = await deleteTaskAction(id);
-      if (response.success) {
-        showToast("Task deleted successfully!");
-      } else {
-        showToast(response.error || "Failed to delete", "error");
+      try {
+        const response = (await deleteTaskAction(id)) as {
+          success: boolean;
+          message: string;
+          error?: string;
+        };
+
+        if (response.success) {
+          showToast(response.message || "Task deleted successfully!");
+        } else {
+          showToast(response.message || "Failed to delete task", "error");
+        }
+      } catch (error) {
+        showToast("An unexpected error occurred", "error");
+      } finally {
+        setLoadingId(null);
       }
-      setLoadingId(null);
     }
   };
 
